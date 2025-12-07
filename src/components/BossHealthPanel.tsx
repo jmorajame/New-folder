@@ -29,19 +29,71 @@ export const BossHealthPanel: React.FC<BossHealthPanelProps> = ({ state }) => {
           const percent = Math.min(100, (dmg / maxHp) * 100);
           const isDead = state.deadBosses[1]?.[i] ?? false;
           const barColor = percent >= 100 ? '#57534E' : '#D97706';
+          const maxHpLabel =
+            maxHp >= 1_000_000 ? `${(maxHp / 1_000_000).toFixed(0)}M` : maxHp.toLocaleString();
 
           return (
             <div
               key={i}
-              className={`hp-card p-4 rounded-xl border border-kanso-border dark:border-kansoDark-border ${
-                isDead
-                  ? 'opacity-50 grayscale bg-kanso-surface dark:bg-kansoDark-surface'
-                  : 'bg-kanso-surface dark:bg-kansoDark-surface'
+              className={`hp-card p-4 rounded-2xl border transition-all duration-200 ${
+                isDead ? 'is-dead' : ''
               }`}
             >
-              <div className="flex flex-col items-center gap-3">
-                {/* Avatar */}
-                <div className="relative">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="relative boss-avatar">
+                    <img
+                      src={BOSS_IMAGES[i] ?? BOSS_IMAGES[0]}
+                      alt={name}
+                      className="w-12 h-12 rounded-xl object-cover"
+                    />
+                    {isDead && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/50">
+                        <i className="fas fa-skull text-white text-sm"></i>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-kanso-text dark:text-kansoDark-text">
+                      {name}
+                    </div>
+                    <div className="text-[11px] text-kanso-muted dark:text-kansoDark-muted">
+                      Shadow Boss
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-kanso-text dark:text-kansoDark-text">
+                    {percent.toFixed(1)}%
+                  </div>
+                  <div className="text-[11px] text-kanso-muted dark:text-kansoDark-muted">
+                    Progress
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <div className="relative h-2 bg-kanso-bg dark:bg-[#262626] rounded-full overflow-hidden mb-2">
+                  <div
+                    className="h-full boss-bar"
+                    style={{
+                      width: `${percent}%`,
+                      background: barColor,
+                    }}
+                  />
+                </div>
+                <div className="text-[11px] font-mono text-kanso-muted dark:text-kansoDark-muted flex items-center justify-between">
+                  <span>{dmg.toLocaleString()}</span>
+                  <span>/ {maxHpLabel}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
                   <img
                     src={BOSS_IMAGES[i] ?? BOSS_IMAGES[0]}
                     alt={name}

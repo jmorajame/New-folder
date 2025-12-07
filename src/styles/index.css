@@ -185,6 +185,54 @@ body {
   transform: scale(0.96);
 }
 
+/* Boss Health Panel */
+.hp-card {
+  background: #f3efeb;
+  border: 1px solid rgba(52, 48, 45, 0.08);
+  box-shadow: 0 16px 30px -14px rgba(60, 50, 40, 0.12);
+}
+
+[data-theme="dark"] .hp-card {
+  background: #221d1c;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 16px 30px -14px rgba(0, 0, 0, 0.5);
+}
+
+.hp-card:hover {
+  transform: translateY(-1px);
+}
+
+.hp-card.is-dead {
+  opacity: 0.7;
+  filter: grayscale(0.9);
+}
+
+.boss-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  padding: 4px;
+  background: linear-gradient(180deg, #f9f8f6 0%, #ebe7e0 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .boss-avatar {
+  background: linear-gradient(180deg, #302826 0%, #1f1a19 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+.boss-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.boss-bar {
+  transition: width 0.3s ease;
+  border-radius: 9999px;
+}
+
 /* Input Styles */
 .input-minimal {
   width: 100%;
