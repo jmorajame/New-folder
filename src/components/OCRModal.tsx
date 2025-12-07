@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AppState } from '../types';
 import { useTranslations } from '../hooks/useTranslations';
 import { BOSS_NAMES, BOSS_IMAGES } from '../constants';
@@ -96,6 +96,78 @@ export const OCRModal: React.FC<OCRModalProps> = ({
     }
     onClose();
   };
+
+  // Handle paste from clipboard
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePaste = async (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.indexOf('image') !== -1) {
+          e.preventDefault();
+          const blob = item.getAsFile();
+          if (!blob) continue;
+
+          // Show preview
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            setPreview(e.target?.result as string);
+          };
+          reader.readAsDataURL(blob);
+
+          setLoading(true);
+          setStatus(t('ocr_status_init'));
+
+          try {
+            const worker = await createWorker('eng+tha');
+            setStatus(t('ocr_status_recog'));
+
+            const { data } = await worker.recognize(blob);
+            await worker.terminate();
+
+            // Extract numbers from OCR result
+            const text = data.text;
+            const numbers = text.match(/\d{1,3}(?:[,\s]\d{3})*(?:\.\d+)?/g) || [];
+            
+            if (numbers.length > 0) {
+              const largestNumber = numbers
+                .map(n => parseFloat(n.replace(/[,\s]/g, '')))
+                .reduce((a, b) => Math.max(a, b), 0);
+              
+              if (largestNumber > 0) {
+                onResult(selectedBoss, Math.floor(largestNumber));
+                setStatus(`Found: ${largestNumber.toLocaleString()}`);
+                setTimeout(() => {
+                  onClose();
+                  setPreview(null);
+                  setStatus('');
+                }, 1500);
+              } else {
+                setStatus('No valid number found');
+              }
+            } else {
+              setStatus('No numbers detected');
+            }
+          } catch (error) {
+            console.error('OCR Error:', error);
+            setStatus('Error: ' + (error instanceof Error ? error.message : 'Unknown error'));
+          } finally {
+            setLoading(false);
+          }
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('paste', handlePaste);
+    return () => {
+      window.removeEventListener('paste', handlePaste);
+    };
+  }, [isOpen, selectedBoss, onResult, onClose, t]);
 
   if (!isOpen) return null;
 
@@ -201,7 +273,8 @@ export const OCRModal: React.FC<OCRModalProps> = ({
           <div className="p-4 bg-kanso-surface dark:bg-kansoDark-surface rounded-lg text-sm text-kanso-muted dark:text-kansoDark-muted">
             <p className="font-medium mb-2">Instructions:</p>
             <ul className="list-disc list-inside space-y-1">
-              <li>Take a screenshot or select an image with the score</li>
+              <li><strong>Quick way:</strong> Press <kbd className="px-2 py-1 bg-kanso-bg dark:bg-kansoDark-bg border border-kanso-border dark:border-kansoDark-border rounded">Ctrl+V</kbd> to paste an image from clipboard</li>
+              <li>Or select an image file using the file input above</li>
               <li>Make sure the numbers are clear and readable</li>
               <li>The OCR will automatically detect and extract the largest number</li>
               <li>Supported formats: PNG, JPG, JPEG</li>
