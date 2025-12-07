@@ -94,49 +94,4 @@ export const BossHealthPanel: React.FC<BossHealthPanelProps> = ({ state }) => {
     </div>
   );
 };
-                  <img
-                    src={BOSS_IMAGES[i] ?? BOSS_IMAGES[0]}
-                    alt={name}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-kanso-border dark:border-kansoDark-border shadow-lg"
-                  />
-                  {isDead && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
-                      <i className="fas fa-skull text-white text-xl"></i>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Name */}
-                <span className="font-bold text-sm text-kanso-text dark:text-kansoDark-text">
-                  {name}
-                </span>
-                
-                {/* Progress Percentage */}
-                <span className="text-lg font-bold text-kanso-text dark:text-kansoDark-text">
-                  {percent.toFixed(1)}%
-                </span>
-                
-                {/* Progress Bar */}
-                <div className="w-full">
-                  <div className="relative h-2 bg-kanso-bg dark:bg-kansoDark-bg rounded-full overflow-hidden mb-2">
-                    <div
-                      className="h-full transition-all duration-300 rounded-full"
-                      style={{
-                        width: `${percent}%`,
-                        background: barColor,
-                      }}
-                    />
-                  </div>
-                  <div className="text-xs font-mono text-kanso-muted dark:text-kansoDark-muted text-center">
-                    {dmg.toLocaleString()} / {(maxHp / 1_000_000).toFixed(0)}M
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
 
