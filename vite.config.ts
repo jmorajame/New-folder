@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: process.env.NODE_ENV === 'production' 
-    ? '/Seven-Knights-BossGuild-Tracker/' 
+    ? '/New-folder/' 
     : '/',
   server: {
     port: 3000,

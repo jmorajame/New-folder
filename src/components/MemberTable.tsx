@@ -25,7 +25,6 @@ export const MemberTable: React.FC<MemberTableProps> = ({
   onProfile,
 }) => {
   const { t } = useTranslations(state);
-  const [editingCell, setEditingCell] = useState<{ member: number; boss: number } | null>(null);
 
   const filteredMembers = state.members.filter((member) => {
     if (searchTerm && !member.name.toLowerCase().includes(searchTerm.toLowerCase())) {

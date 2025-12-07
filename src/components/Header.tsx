@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '../hooks/useTheme';
 import { useTranslations } from '../hooks/useTranslations';
 import { AppState } from '../types';
 

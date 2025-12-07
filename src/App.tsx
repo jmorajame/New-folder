@@ -18,11 +18,10 @@ function App() {
     deleteMember,
     updateMemberValue,
     resetWeek,
-    toggleDeadBoss,
     sortMembers,
   } = useAppState();
   
-  const { theme, toggleTheme } = useTheme();
+  const { toggleTheme } = useTheme();
   const { t } = useTranslations(state);
   const [searchTerm, setSearchTerm] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);

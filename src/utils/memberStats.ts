@@ -1,5 +1,5 @@
 import { Member, MemberStats, Tier, AppState } from '../types';
-import { BOSS_NAMES, CONFIG } from '../constants';
+import { BOSS_NAMES } from '../constants';
 
 export function getMemberStats(
   member: Member,

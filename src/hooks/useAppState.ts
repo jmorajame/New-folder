@@ -32,17 +32,6 @@ export function useAppState() {
     }));
   }, []);
 
-  const updateMember = useCallback(
-    (index: number, updates: Partial<Member>) => {
-      setState((prev) => {
-        const newMembers = [...prev.members];
-        newMembers[index] = { ...newMembers[index], ...updates };
-        return { ...prev, members: newMembers };
-      });
-    },
-    []
-  );
-
   const deleteMember = useCallback((index: number) => {
     setState((prev) => {
       const newMembers = prev.members.filter((_, i) => i !== index);
@@ -170,7 +159,6 @@ export function useAppState() {
     state,
     updateState,
     addMember,
-    updateMember,
     deleteMember,
     updateMemberValue,
     resetWeek,

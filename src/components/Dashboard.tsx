@@ -9,7 +9,7 @@ import {
   LinearScale,
   BarElement,
 } from 'chart.js';
-import { AppState, Member } from '../types';
+import { AppState } from '../types';
 import { useTranslations } from '../hooks/useTranslations';
 import { getMemberStats, getTotalPossibleAttempts } from '../utils/memberStats';
 import { BOSS_NAMES } from '../constants';
