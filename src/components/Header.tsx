@@ -5,9 +5,10 @@ import { AppState } from '../types';
 interface HeaderProps {
   state: Pick<AppState, 'language'>;
   onThemeToggle: () => void;
+  onSettingsOpen: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ state, onThemeToggle }) => {
+export const Header: React.FC<HeaderProps> = ({ state, onThemeToggle, onSettingsOpen }) => {
   const { t } = useTranslations(state);
 
   return (
@@ -22,6 +23,14 @@ export const Header: React.FC<HeaderProps> = ({ state, onThemeToggle }) => {
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <button
+            onClick={onSettingsOpen}
+            className="tool-btn"
+            aria-label="Settings"
+            title={t('modal_settings')}
+          >
+            <i className="fas fa-cog"></i>
+          </button>
           <button
             onClick={onThemeToggle}
             className="tool-btn"

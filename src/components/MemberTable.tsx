@@ -13,6 +13,7 @@ interface MemberTableProps {
   onDelete: (index: number) => void;
   onRename: (index: number) => void;
   onProfile: (index: number) => void;
+  onToggleDeadBoss: (page: 1 | 2, bossIndex: number) => void;
 }
 
 export const MemberTable: React.FC<MemberTableProps> = ({
@@ -23,6 +24,7 @@ export const MemberTable: React.FC<MemberTableProps> = ({
   onDelete,
   onRename,
   onProfile,
+  onToggleDeadBoss,
 }) => {
   const { t } = useTranslations(state);
 
@@ -89,6 +91,19 @@ export const MemberTable: React.FC<MemberTableProps> = ({
                         <span className={`text-xs font-bold ${isDead ? 'opacity-50' : ''}`}>
                           {name}
                         </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleDeadBoss(1, i);
+                          }}
+                          className={`text-xs px-2 py-1 rounded transition-colors ${
+                            isDead
+                              ? 'bg-red-500 text-white'
+                              : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                          }`}
+                        >
+                          {isDead ? 'DEAD' : 'ALIVE'}
+                        </button>
                         {getSortIcon('boss', i)}
                       </div>
                     </th>
@@ -104,9 +119,30 @@ export const MemberTable: React.FC<MemberTableProps> = ({
                   <img
                     src={BOSS_IMAGES[4] ?? BOSS_IMAGES[0]}
                     alt="God"
-                    className="w-12 h-12 rounded-xl object-cover border border-stone-200 dark:border-stone-700"
+                    className={`w-12 h-12 rounded-xl object-cover border border-stone-200 dark:border-stone-700 ${
+                      state.deadBosses[2]?.[0] ? 'opacity-50 grayscale' : ''
+                    }`}
                   />
-                  <span className="text-xs font-bold">{t('tab_god')}</span>
+                  <span
+                    className={`text-xs font-bold ${
+                      state.deadBosses[2]?.[0] ? 'opacity-50' : ''
+                    }`}
+                  >
+                    {t('tab_god')}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleDeadBoss(2, 0);
+                    }}
+                    className={`text-xs px-2 py-1 rounded transition-colors ${
+                      state.deadBosses[2]?.[0]
+                        ? 'bg-red-500 text-white'
+                        : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                    }`}
+                  >
+                    {state.deadBosses[2]?.[0] ? 'DEAD' : 'ALIVE'}
+                  </button>
                   {getSortIcon('boss', 0)}
                 </div>
               </th>

@@ -7,6 +7,8 @@ import { MemberTable } from './components/MemberTable';
 import { Toast } from './components/Toast';
 import { ProfileModal } from './components/ProfileModal';
 import { OCRModal } from './components/OCRModal';
+import { SettingsModal } from './components/SettingsModal';
+import { BossHealthPanel } from './components/BossHealthPanel';
 import { useAppState } from './hooks/useAppState';
 import { useTheme } from './hooks/useTheme';
 import { useTranslations } from './hooks/useTranslations';
@@ -22,6 +24,7 @@ function App() {
     resetWeek,
     sortMembers,
     updateMember,
+    toggleDeadBoss,
   } = useAppState();
   
   const { toggleTheme } = useTheme();
@@ -33,6 +36,7 @@ function App() {
   const [ocrModalOpen, setOcrModalOpen] = useState(false);
   const [ocrBossIndex, setOcrBossIndex] = useState(0);
   const [ocrMemberIndex, setOcrMemberIndex] = useState(-1);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ message, type });
@@ -109,9 +113,30 @@ function App() {
     setOcrModalOpen(false);
   };
 
+  const handleBulkAddMembers = (names: string[]) => {
+    names.forEach((name) => {
+      if (name.trim()) {
+        addMember(name.trim());
+      }
+    });
+    showToast(`Added ${names.length} members`, 'success');
+  };
+
+  const handleUpdateConfig = (config: Partial<typeof state.config>) => {
+    updateState({ config: { ...state.config, ...config } });
+    showToast(t('toast_saved'), 'success');
+  };
+
+  const handleFactoryReset = () => {
+    if (window.confirm('This will delete ALL data. Are you absolutely sure?')) {
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-kanso-bg dark:bg-kansoDark-bg">
-      <Header state={state} onThemeToggle={toggleTheme} />
+      <Header state={state} onThemeToggle={toggleTheme} onSettingsOpen={() => setSettingsModalOpen(true)} />
       <Toolbar
         state={state}
         onPageChange={(page) => updateState({ page })}
@@ -131,6 +156,7 @@ function App() {
       />
       <Dashboard state={state} />
       <div className="container mx-auto px-4 py-4">
+        <BossHealthPanel state={state} />
         <MemberTable
           state={state}
           searchTerm={searchTerm}
@@ -139,6 +165,7 @@ function App() {
           onDelete={handleDeleteMember}
           onRename={handleRename}
           onProfile={handleProfile}
+          onToggleDeadBoss={toggleDeadBoss}
         />
       </div>
       {toast && (
@@ -177,6 +204,17 @@ function App() {
         state={state}
         memberIndex={ocrMemberIndex}
         bossIndex={ocrBossIndex}
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={settingsModalOpen}
+        onClose={() => setSettingsModalOpen(false)}
+        state={state}
+        onUpdateConfig={handleUpdateConfig}
+        onUpdateLanguage={(lang) => updateState({ language: lang })}
+        onBulkAddMembers={handleBulkAddMembers}
+        onFactoryReset={handleFactoryReset}
       />
     </div>
   );
