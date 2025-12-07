@@ -136,7 +136,12 @@ function App() {
 
   return (
     <div className="min-h-screen bg-kanso-bg dark:bg-kansoDark-bg">
-      <Header state={state} onThemeToggle={toggleTheme} onSettingsOpen={() => setSettingsModalOpen(true)} />
+      <Header 
+        state={state} 
+        onThemeToggle={toggleTheme} 
+        onSettingsOpen={() => setSettingsModalOpen(true)}
+        onUpdateState={updateState}
+      />
       <Toolbar
         state={state}
         onPageChange={(page) => updateState({ page })}

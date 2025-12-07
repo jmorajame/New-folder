@@ -58,15 +58,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
       }
     });
 
-    const percent = totalPossible > 0 ? Math.round((grandTotal / totalPossible) * 100) : 0;
+    const percent = totalPossible > 0 ? Math.round((grandTotal / totalPossible) * 100 * 10) / 10 : 0;
     const missingCount = Math.max(0, totalPossible - grandTotal);
     const dailyAvg = state.members.length > 0 ? (grandTotal / state.members.length) : 0;
+    const expectedPerDay = state.page === 1 ? 4 : 1;
+    const days = state.page === 1 ? state.days1 : state.days2;
+    const expectedTotal = days * expectedPerDay * state.members.length;
+    const missingForGoal = Math.max(0, expectedTotal - grandTotal);
 
     return {
       totalPossible,
       grandTotal,
       percent,
       missingCount,
+      missingForGoal,
       dailyAvg: Number(dailyAvg.toFixed(1)),
       bossTotals,
       bossDamage,
@@ -112,79 +117,131 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
 
   return (
     <div className="dashboard p-4 space-y-4">
+      {/* Guild Progress Section */}
       <div className="glass-panel p-6">
-        <h2 className="text-lg font-bold mb-4 text-kanso-text dark:text-kansoDark-text">
-          {t('guild_progress')}
-        </h2>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="metric-card">
-            <div className="metric-icon">
-              <i className="fas fa-bullseye"></i>
-            </div>
-            <div>
-              <div className="text-xs text-kanso-muted dark:text-kansoDark-muted">
-                {t('metric_total_goal')}
-              </div>
-              <div className="text-lg font-bold text-kanso-text dark:text-kansoDark-text">
-                {analytics.totalPossible.toLocaleString()}
-              </div>
-            </div>
-          </div>
-          
-          <div className="metric-card metric-used">
-            <div className="metric-icon">
-              <i className="fas fa-check-circle"></i>
-            </div>
-            <div>
-              <div className="text-xs text-kanso-muted dark:text-kansoDark-muted">
-                {t('metric_done')}
-              </div>
-              <div className="text-lg font-bold value">
-                {analytics.grandTotal.toLocaleString()}
-              </div>
-            </div>
-          </div>
-          
-          <div className="metric-card metric-remain">
-            <div className="metric-icon">
-              <i className="fas fa-hourglass-half"></i>
-            </div>
-            <div>
-              <div className="text-xs text-kanso-muted dark:text-kansoDark-muted">
-                {t('metric_left')}
-              </div>
-              <div className="text-lg font-bold value">
-                {Math.max(0, analytics.totalPossible - analytics.grandTotal).toLocaleString()}
-              </div>
-            </div>
-          </div>
-          
-          <div className="metric-card">
-            <div className="metric-icon">
-              <i className="fas fa-chart-line"></i>
-            </div>
-            <div>
-              <div className="text-xs text-kanso-muted dark:text-kansoDark-muted">
-                {t('metric_daily_avg')}
-              </div>
-              <div className="text-lg font-bold text-kanso-text dark:text-kansoDark-text">
-                {analytics.dailyAvg}
-              </div>
-            </div>
-          </div>
+        <div className="flex items-start justify-between mb-4">
+          <h2 className="text-lg font-bold text-kanso-text dark:text-kansoDark-text">
+            {t('guild_progress')}
+          </h2>
         </div>
-
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-48 h-48">
-            <Doughnut data={chartData} options={{ responsive: true, maintainAspectRatio: true }} />
-          </div>
-          <div className="ml-6">
-            <div className="text-3xl font-bold text-kanso-text dark:text-kansoDark-text">
-              {analytics.percent}%
+        
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          {/* Left: Donut Chart */}
+          <div className="flex-shrink-0">
+            <div className="relative w-48 h-48 mx-auto">
+              <Doughnut 
+                data={chartData} 
+                options={{ 
+                  responsive: true, 
+                  maintainAspectRatio: true,
+                  cutout: '70%',
+                  plugins: {
+                    legend: {
+                      display: false
+                    }
+                  }
+                }} 
+              />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-kanso-text dark:text-kansoDark-text">
+                    {analytics.percent}%
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="text-sm text-kanso-muted dark:text-kansoDark-muted">
-              {t('chart_percent')}
+          </div>
+
+          {/* Center: Progress Bar and Stats */}
+          <div className="flex-1 space-y-4">
+            {/* Horizontal Progress Bar */}
+            <div>
+              <div className="h-4 bg-kanso-bg dark:bg-kansoDark-bg rounded-full overflow-hidden mb-2">
+                <div
+                  className="h-full bg-gradient-to-r from-clay-500 to-clay-600 transition-all duration-300"
+                  style={{ width: `${analytics.percent}%` }}
+                />
+              </div>
+              <div className="text-sm font-mono text-kanso-muted dark:text-kansoDark-muted text-center">
+                {analytics.percent}% {t('chart_percent')}
+              </div>
+            </div>
+
+            {/* Data Cards Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              <div className="metric-card">
+                <div className="metric-icon">
+                  <i className="fas fa-bullseye"></i>
+                </div>
+                <div>
+                  <div className="text-xs text-kanso-muted dark:text-kansoDark-muted">
+                    {t('metric_total_goal')}
+                  </div>
+                  <div className="text-lg font-bold text-kanso-text dark:text-kansoDark-text">
+                    {analytics.totalPossible.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="metric-card metric-used">
+                <div className="metric-icon">
+                  <i className="fas fa-check-circle"></i>
+                </div>
+                <div>
+                  <div className="text-xs text-kanso-muted dark:text-kansoDark-muted">
+                    {t('metric_done')}
+                  </div>
+                  <div className="text-lg font-bold value">
+                    {analytics.grandTotal.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="metric-card metric-remain">
+                <div className="metric-icon">
+                  <i className="fas fa-hourglass-half"></i>
+                </div>
+                <div>
+                  <div className="text-xs text-kanso-muted dark:text-kansoDark-muted">
+                    {t('metric_left')}
+                  </div>
+                  <div className="text-lg font-bold value">
+                    {Math.max(0, analytics.totalPossible - analytics.grandTotal).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="metric-card">
+                <div className="metric-icon">
+                  <i className="fas fa-chart-line"></i>
+                </div>
+                <div>
+                  <div className="text-xs text-kanso-muted dark:text-kansoDark-muted">
+                    {t('metric_daily_avg')}
+                  </div>
+                  <div className="text-lg font-bold text-kanso-text dark:text-kansoDark-text">
+                    {analytics.dailyAvg}
+                  </div>
+                </div>
+              </div>
+
+              <div className="metric-card">
+                <div className="metric-icon">
+                  <i className="fas fa-exclamation-triangle"></i>
+                </div>
+                <div>
+                  <div className="text-xs text-kanso-muted dark:text-kansoDark-muted">
+                    {t('metric_missing')}
+                  </div>
+                  <div className={`text-lg font-bold ${
+                    analytics.missingForGoal === 0 
+                      ? 'text-emerald-600 dark:text-emerald-400' 
+                      : 'text-amber-600 dark:text-amber-500'
+                  }`}>
+                    {analytics.missingForGoal === 0 ? 'All Done' : analytics.missingForGoal}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -195,7 +252,28 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
           {t('boss_breakdown')}
         </h2>
         <div className="h-64">
-          <Bar data={barChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+          <Bar 
+            data={barChartData} 
+            options={{ 
+              responsive: true, 
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    callback: function(value) {
+                      return (value as number / 1_000_000).toFixed(0) + 'M';
+                    }
+                  }
+                }
+              },
+              plugins: {
+                legend: {
+                  display: false
+                }
+              }
+            }} 
+          />
         </div>
       </div>
     </div>
