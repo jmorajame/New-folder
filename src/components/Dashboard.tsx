@@ -62,7 +62,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
     const missingCount = Math.max(0, totalPossible - grandTotal);
     const dailyAvg = state.members.length > 0 ? (grandTotal / state.members.length) : 0;
     const expectedPerDay = state.page === 1 ? 4 : 1;
-    const days = state.page === 1 ? state.days1 : state.days2;
     const expectedTotal = days * expectedPerDay * state.members.length;
     const missingForGoal = Math.max(0, expectedTotal - grandTotal);
 
