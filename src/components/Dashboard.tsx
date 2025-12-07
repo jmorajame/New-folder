@@ -87,7 +87,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
   const barChartData = useMemo(() => {
     if (state.page === 1) {
       return {
-        labels: BOSS_NAMES,
+        labels: [...BOSS_NAMES] as string[],
         datasets: [
           {
             label: t('th_total'),
