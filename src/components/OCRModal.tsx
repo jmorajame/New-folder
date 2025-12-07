@@ -8,6 +8,7 @@ interface OCRModalProps {
   isOpen: boolean;
   onClose: () => void;
   onResult: (bossIndex: number, value: number) => void;
+  onBulkResults: (bossIndex: number, entries: { name: string; damage: number; plays?: number }[]) => void;
   state: Pick<AppState, 'page' | 'config' | 'language'>;
   memberIndex: number;
   bossIndex: number;
@@ -17,6 +18,7 @@ export const OCRModal: React.FC<OCRModalProps> = ({
   isOpen,
   onClose,
   onResult,
+  onBulkResults,
   state,
   memberIndex,
   bossIndex,
@@ -27,6 +29,33 @@ export const OCRModal: React.FC<OCRModalProps> = ({
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedBoss, setSelectedBoss] = useState(bossIndex);
+
+  const parseEntries = (text: string) => {
+    const lines = text
+      .split(/\n+/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    const entries: { name: string; damage: number; plays?: number }[] = [];
+    for (let i = 0; i < lines.length; i++) {
+      const scoreMatch = lines[i].match(/(\d{1,3}(?:[,\s]\d{3})+|\d{4,})/);
+      if (!scoreMatch) continue;
+      const damage = parseInt(scoreMatch[1].replace(/[,\s]/g, ''), 10);
+      if (!damage || Number.isNaN(damage)) continue;
+
+      const playsMatch =
+        lines[i].match(/(\d+)\s*Play/i) || lines[i + 1]?.match(/(\d+)\s*Play/i);
+      const nameLine = lines[i - 1] && !/\d/.test(lines[i - 1]) ? lines[i - 1] : lines[i - 2] || '';
+      const name = nameLine || `Member ${entries.length + 1}`;
+
+      entries.push({
+        name,
+        damage,
+        plays: playsMatch ? parseInt(playsMatch[1], 10) : undefined,
+      });
+    }
+    return entries;
+  };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -49,35 +78,40 @@ export const OCRModal: React.FC<OCRModalProps> = ({
       const { data } = await worker.recognize(file);
       await worker.terminate();
 
-      // Extract numbers from OCR result
       const text = data.text;
-      const keywords = state.config.ocrKeywords.split(',').map(k => k.trim());
-      
-      // Look for numbers in the text
-      const numbers = text.match(/\d{1,3}(?:[,\s]\d{3})*(?:\.\d+)?/g) || [];
-      
-      if (numbers.length > 0) {
-        // Get the largest number (likely the score)
-        const largestNumber = numbers
-          .map(n => parseFloat(n.replace(/[,\s]/g, '')))
-          .reduce((a, b) => Math.max(a, b), 0);
-        
-        if (largestNumber > 0) {
-          onResult(selectedBoss, Math.floor(largestNumber));
-          setStatus(`Found: ${largestNumber.toLocaleString()}`);
-          setTimeout(() => {
-            onClose();
-            setPreview(null);
-            setStatus('');
-            if (fileInputRef.current) {
-              fileInputRef.current.value = '';
-            }
-          }, 1500);
-        } else {
-          setStatus('No valid number found');
-        }
+      const entries = parseEntries(text);
+      if (entries.length > 1) {
+        onBulkResults(selectedBoss, entries);
+        setStatus(`Updated ${entries.length} members`);
+        setTimeout(() => {
+          handleClose();
+        }, 800);
       } else {
-        setStatus('No numbers detected');
+        // fallback to single value detection
+        const numbers = text.match(/\d{1,3}(?:[,\s]\d{3})*(?:\.\d+)?/g) || [];
+        
+        if (numbers.length > 0) {
+          const largestNumber = numbers
+            .map(n => parseFloat(n.replace(/[,\s]/g, '')))
+            .reduce((a, b) => Math.max(a, b), 0);
+          
+          if (largestNumber > 0) {
+            onResult(selectedBoss, Math.floor(largestNumber));
+            setStatus(`Found: ${largestNumber.toLocaleString()}`);
+            setTimeout(() => {
+              onClose();
+              setPreview(null);
+              setStatus('');
+              if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+              }
+            }, 1500);
+          } else {
+            setStatus('No valid number found');
+          }
+        } else {
+          setStatus('No numbers detected');
+        }
       }
     } catch (error) {
       console.error('OCR Error:', error);
@@ -129,28 +163,36 @@ export const OCRModal: React.FC<OCRModalProps> = ({
             const { data } = await worker.recognize(blob);
             await worker.terminate();
 
-            // Extract numbers from OCR result
             const text = data.text;
-            const numbers = text.match(/\d{1,3}(?:[,\s]\d{3})*(?:\.\d+)?/g) || [];
-            
-            if (numbers.length > 0) {
-              const largestNumber = numbers
-                .map(n => parseFloat(n.replace(/[,\s]/g, '')))
-                .reduce((a, b) => Math.max(a, b), 0);
-              
-              if (largestNumber > 0) {
-                onResult(selectedBoss, Math.floor(largestNumber));
-                setStatus(`Found: ${largestNumber.toLocaleString()}`);
-                setTimeout(() => {
-                  onClose();
-                  setPreview(null);
-                  setStatus('');
-                }, 1500);
-              } else {
-                setStatus('No valid number found');
-              }
+            const entries = parseEntries(text);
+            if (entries.length > 1) {
+              onBulkResults(selectedBoss, entries);
+              setStatus(`Updated ${entries.length} members`);
+              setTimeout(() => {
+                handleClose();
+              }, 800);
             } else {
-              setStatus('No numbers detected');
+              const numbers = text.match(/\d{1,3}(?:[,\s]\d{3})*(?:\.\d+)?/g) || [];
+              
+              if (numbers.length > 0) {
+                const largestNumber = numbers
+                  .map(n => parseFloat(n.replace(/[,\s]/g, '')))
+                  .reduce((a, b) => Math.max(a, b), 0);
+                
+                if (largestNumber > 0) {
+                  onResult(selectedBoss, Math.floor(largestNumber));
+                  setStatus(`Found: ${largestNumber.toLocaleString()}`);
+                  setTimeout(() => {
+                    onClose();
+                    setPreview(null);
+                    setStatus('');
+                  }, 1500);
+                } else {
+                  setStatus('No valid number found');
+                }
+              } else {
+                setStatus('No numbers detected');
+              }
             }
           } catch (error) {
             console.error('OCR Error:', error);

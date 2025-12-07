@@ -113,6 +113,51 @@ function App() {
     setOcrModalOpen(false);
   };
 
+  const handleOCRBulkResults = (
+    bossIndex: number,
+    entries: { name: string; damage: number; plays?: number }[]
+  ) => {
+    const members = [...state.members];
+
+    entries.forEach((entry) => {
+      let idx = members.findIndex(
+        (m) => m.name.trim().toLowerCase() === entry.name.trim().toLowerCase()
+      );
+
+      if (idx === -1) {
+        const allowAdd = window.confirm(`Add new member "${entry.name}" from scan?`);
+        if (!allowAdd) return;
+        members.push({
+          name: entry.name.trim(),
+          v: [0, 0, 0, 0],
+          v2: 0,
+          d: [0, 0, 0, 0],
+        });
+        idx = members.length - 1;
+      }
+
+      const member = members[idx];
+      const newD = [...(member.d || [0, 0, 0, 0])];
+      const newV = [...member.v];
+      if (bossIndex >= 0) {
+        newD[bossIndex] = entry.damage;
+        if (typeof entry.plays === 'number') {
+          newV[bossIndex] = entry.plays;
+        }
+      } else {
+        // fallback to total (page 2 style)
+        members[idx] = { ...member, v2: entry.damage };
+        return;
+      }
+
+      members[idx] = { ...member, d: newD, v: newV };
+    });
+
+    updateState({ members });
+    showToast(t('toast_saved'), 'success');
+    setOcrModalOpen(false);
+  };
+
   const handleBulkAddMembers = (names: string[]) => {
     names.forEach((name) => {
       if (name.trim()) {
@@ -206,6 +251,7 @@ function App() {
           setOcrMemberIndex(-1);
         }}
         onResult={handleOCRResult}
+        onBulkResults={handleOCRBulkResults}
         state={state}
         memberIndex={ocrMemberIndex}
         bossIndex={ocrBossIndex}
