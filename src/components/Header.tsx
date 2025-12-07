@@ -19,10 +19,10 @@ export const Header: React.FC<HeaderProps> = ({ state, onThemeToggle, onSettings
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold text-kanso-text dark:text-kansoDark-text">
-                BossGuild
+                LeaderSongSimelz
               </h1>
               <span className="px-2 py-1 bg-clay-500 text-white text-xs font-bold rounded">
-                A4XX
+                copy pasta
               </span>
             </div>
             <p className="text-sm text-kanso-muted dark:text-kansoDark-muted">

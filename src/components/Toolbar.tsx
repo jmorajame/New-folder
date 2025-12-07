@@ -43,16 +43,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </button>
       
       <div className="divider"></div>
-      
-      <button className="tool-btn" onClick={onUndo}>
-        <i className="fas fa-undo"></i> {t('btn_undo')}
-      </button>
-      <button
-        className={`tool-btn ${state.compact ? 'active' : ''}`}
-        onClick={onCompactToggle}
-      >
-        <i className="fas fa-compress"></i> {t('btn_compact')}
-      </button>
       <button
         className={`tool-btn ${state.mode === 'damage' ? 'active' : ''}`}
         onClick={onModeToggle}
