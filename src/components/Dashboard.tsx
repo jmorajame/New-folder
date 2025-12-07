@@ -252,7 +252,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
                       ? 'text-emerald-600 dark:text-emerald-400' 
                       : 'text-amber-600 dark:text-amber-500'
                   }`}>
-                    {analytics.missingForGoal === 0 ? 'All Done' : analytics.missingForGoal}
+                    {analytics.missingForGoal === 0
+                      ? 'All Done'
+                      : analytics.missingForGoal.toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        })}
                   </div>
                 </div>
               </div>
