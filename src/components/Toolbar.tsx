@@ -56,8 +56,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       <button
         className={`tool-btn ${state.mode === 'damage' ? 'active' : ''}`}
         onClick={onModeToggle}
+        title={state.mode === 'damage' ? 'Damage mode (records damage numbers)' : 'Count mode (tracks attempts)'}
       >
-        <i className="fas fa-calculator"></i> {t('btn_mode')}
+        <i className="fas fa-calculator"></i>
+        {state.mode === 'damage' ? 'Damage Mode' : 'Count Mode'}
       </button>
       <button
         className={`tool-btn ${state.filter === 'risk' ? 'active' : ''}`}

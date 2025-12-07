@@ -67,19 +67,15 @@ export function getTotalPossibleAttempts(
 ): number {
   const days = state.page === 1 ? state.days1 : state.days2;
   const membersCount = state.members.length;
-  const attemptsPerDay = state.page === 1 ? 4 : 1;
+  const allShadowDead = (state.deadBosses[1] || []).every((dead) => dead);
 
   if (state.page === 1) {
-    let total = 0;
-    BOSS_NAMES.forEach((_, i) => {
-      if (!(state.deadBosses[1]?.[i] ?? false)) {
-        total += days * membersCount;
-      }
-    });
-    return total;
-  } else {
-    if (state.deadBosses[2]?.[0] ?? false) return 0;
+    if (allShadowDead) return 0;
+    // Event spans the full period regardless of individual bosses; count once per day per member
     return days * membersCount;
   }
+
+  if (state.deadBosses[2]?.[0] ?? false) return 0;
+  return days * membersCount;
 }
 

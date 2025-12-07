@@ -12,7 +12,7 @@ import {
 import { AppState } from '../types';
 import { useTranslations } from '../hooks/useTranslations';
 import { getMemberStats, getTotalPossibleAttempts } from '../utils/memberStats';
-import { BOSS_NAMES } from '../constants';
+import { BOSS_NAMES, BOSS_MAX_HP } from '../constants';
 
 ChartJS.register(
   ArcElement,
@@ -24,15 +24,26 @@ ChartJS.register(
 );
 
 interface DashboardProps {
-  state: Pick<AppState, 'page' | 'days1' | 'days2' | 'members' | 'deadBosses' | 'mode' | 'language'>;
+  state: Pick<AppState, 'page' | 'days1' | 'days2' | 'members' | 'deadBosses' | 'mode' | 'language' | 'config'>;
 }
+
+const getTotalPossibleDamage = (
+  state: Pick<AppState, 'deadBosses' | 'config'>
+): number => {
+  const maxHp = state.config?.bossMaxHp ?? BOSS_MAX_HP;
+  const aliveBosses = BOSS_NAMES.filter((_, i) => !(state.deadBosses[1]?.[i] ?? false)).length;
+  return aliveBosses * maxHp;
+};
 
 export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
   const { t } = useTranslations(state);
 
   const analytics = useMemo(() => {
     const days = state.page === 1 ? state.days1 : state.days2;
-    const totalPossible = getTotalPossibleAttempts(state);
+    const isDamageMode = state.page === 1 && state.mode === 'damage';
+    const totalPossible = isDamageMode
+      ? getTotalPossibleDamage(state)
+      : getTotalPossibleAttempts(state);
     
     let grandTotal = 0;
     const bossTotals = [0, 0, 0, 0];
@@ -61,8 +72,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
     const percent = totalPossible > 0 ? Math.round((grandTotal / totalPossible) * 100 * 10) / 10 : 0;
     const missingCount = Math.max(0, totalPossible - grandTotal);
     const dailyAvg = state.members.length > 0 ? (grandTotal / state.members.length) : 0;
-    const expectedPerDay = state.page === 1 ? 4 : 1;
-    const expectedTotal = days * expectedPerDay * state.members.length;
+    const expectedTotal = isDamageMode
+      ? totalPossible
+      : days * state.members.length; // one attempt per day per member
     const missingForGoal = Math.max(0, expectedTotal - grandTotal);
 
     return {
@@ -219,7 +231,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
                     {t('metric_daily_avg')}
                   </div>
                   <div className="text-lg font-bold text-kanso-text dark:text-kansoDark-text">
-                    {analytics.dailyAvg}
+                    {analytics.dailyAvg.toLocaleString(undefined, {
+                      minimumFractionDigits: 1,
+                      maximumFractionDigits: 1,
+                    })}
                   </div>
                 </div>
               </div>

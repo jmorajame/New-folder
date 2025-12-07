@@ -38,7 +38,7 @@ export const ICONS = ['⚔️', '🏹', '🔮', '🗡️', '🐉'] as const;
 
 export const DEFAULT_STATE = {
   page: 1 as const,
-  days1: 11,
+  days1: 14,
   days2: 11,
   deadBosses: {
     1: [false, false, false, false],
