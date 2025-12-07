@@ -5,6 +5,8 @@ import { Dashboard } from './components/Dashboard';
 import { SearchBar } from './components/SearchBar';
 import { MemberTable } from './components/MemberTable';
 import { Toast } from './components/Toast';
+import { ProfileModal } from './components/ProfileModal';
+import { OCRModal } from './components/OCRModal';
 import { useAppState } from './hooks/useAppState';
 import { useTheme } from './hooks/useTheme';
 import { useTranslations } from './hooks/useTranslations';
@@ -19,12 +21,18 @@ function App() {
     updateMemberValue,
     resetWeek,
     sortMembers,
+    updateMember,
   } = useAppState();
   
   const { toggleTheme } = useTheme();
   const { t } = useTranslations(state);
   const [searchTerm, setSearchTerm] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [selectedMemberIndex, setSelectedMemberIndex] = useState(-1);
+  const [ocrModalOpen, setOcrModalOpen] = useState(false);
+  const [ocrBossIndex, setOcrBossIndex] = useState(0);
+  const [ocrMemberIndex, setOcrMemberIndex] = useState(-1);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ message, type });
@@ -52,8 +60,9 @@ function App() {
   };
 
   const handleScan = () => {
-    // TODO: Implement OCR scanning
-    showToast('OCR feature coming soon', 'info');
+    setOcrBossIndex(0);
+    setOcrMemberIndex(-1);
+    setOcrModalOpen(true);
   };
 
   const handleExport = () => {
@@ -79,8 +88,25 @@ function App() {
   };
 
   const handleProfile = (index: number) => {
-    // TODO: Open profile modal
-    showToast('Profile feature coming soon', 'info');
+    setSelectedMemberIndex(index);
+    setProfileModalOpen(true);
+  };
+
+  const handleScanScore = (memberIndex: number, bossIndex: number) => {
+    setOcrMemberIndex(memberIndex);
+    setOcrBossIndex(bossIndex);
+    setOcrModalOpen(true);
+  };
+
+  const handleOCRResult = (bossIndex: number, value: number) => {
+    if (ocrMemberIndex >= 0 && ocrMemberIndex < state.members.length) {
+      updateMemberValue(ocrMemberIndex, bossIndex, value);
+      showToast(t('toast_saved'), 'success');
+    } else {
+      // OCR from toolbar - just show the result, user can manually enter
+      showToast(`Detected: ${value.toLocaleString()}`, 'info');
+    }
+    setOcrModalOpen(false);
   };
 
   return (
@@ -123,6 +149,35 @@ function App() {
           onClose={() => setToast(null)}
         />
       )}
+
+      {/* Profile Modal */}
+      {selectedMemberIndex >= 0 && state.members[selectedMemberIndex] && (
+        <ProfileModal
+          member={state.members[selectedMemberIndex]}
+          memberIndex={selectedMemberIndex}
+          state={state}
+          isOpen={profileModalOpen}
+          onClose={() => {
+            setProfileModalOpen(false);
+            setSelectedMemberIndex(-1);
+          }}
+          onUpdate={updateMember}
+          onScanScore={handleScanScore}
+        />
+      )}
+
+      {/* OCR Modal */}
+      <OCRModal
+        isOpen={ocrModalOpen}
+        onClose={() => {
+          setOcrModalOpen(false);
+          setOcrMemberIndex(-1);
+        }}
+        onResult={handleOCRResult}
+        state={state}
+        memberIndex={ocrMemberIndex}
+        bossIndex={ocrBossIndex}
+      />
     </div>
   );
 }

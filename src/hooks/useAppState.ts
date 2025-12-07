@@ -156,11 +156,23 @@ export function useAppState() {
     []
   );
 
+  const updateMember = useCallback(
+    (index: number, updates: Partial<Member>) => {
+      setState((prev) => {
+        const newMembers = [...prev.members];
+        newMembers[index] = { ...newMembers[index], ...updates };
+        return { ...prev, members: newMembers };
+      });
+    },
+    []
+  );
+
   return {
     state,
     updateState,
     addMember,
     deleteMember,
+    updateMember,
     updateMemberValue,
     resetWeek,
     toggleDeadBoss,
