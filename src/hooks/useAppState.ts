@@ -116,7 +116,8 @@ export function useAppState() {
         if (order) newSort.order = order;
 
         const sortedMembers = [...prev.members].sort((a, b) => {
-          let valA: any, valB: any;
+          let valA: string | number;
+          let valB: string | number;
 
           if (key === 'name') {
             valA = a.name.toLowerCase();

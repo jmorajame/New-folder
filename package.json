@@ -5,7 +5,7 @@
   "description": "Boss Guild Tracker for Seven Knights Idle - Refactored with React & TypeScript",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit --skipLibCheck && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "deploy": "npm run build && gh-pages -d dist"

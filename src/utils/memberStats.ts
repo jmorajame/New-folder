@@ -72,13 +72,13 @@ export function getTotalPossibleAttempts(
   if (state.page === 1) {
     let total = 0;
     BOSS_NAMES.forEach((_, i) => {
-      if (!state.deadBosses[1][i]) {
+      if (!(state.deadBosses[1]?.[i] ?? false)) {
         total += days * membersCount;
       }
     });
     return total;
   } else {
-    if (state.deadBosses[2][0]) return 0;
+    if (state.deadBosses[2]?.[0] ?? false) return 0;
     return days * membersCount;
   }
 }

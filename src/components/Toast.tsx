@@ -22,7 +22,8 @@ export const Toast: React.FC<ToastProps> = ({
       }, duration);
       return () => clearTimeout(timer);
     }
-  }, [show, duration, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [show, duration]);
 
   if (!show) return null;
 

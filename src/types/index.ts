@@ -17,7 +17,7 @@ export interface AppState {
   };
   members: Member[];
   history: Member[][];
-  archives: any[];
+  archives: unknown[];
   historyIndex: number;
   filter: 'all' | 'risk';
   compact: boolean;

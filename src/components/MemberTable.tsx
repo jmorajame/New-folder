@@ -70,7 +70,8 @@ export const MemberTable: React.FC<MemberTableProps> = ({
             {state.page === 1 ? (
               <>
                 {BOSS_NAMES.map((name, i) => {
-                  const isDead = state.deadBosses[1][i];
+                  const isDead = state.deadBosses[1]?.[i] ?? false;
+                  const imageSrc = BOSS_IMAGES[i] ?? BOSS_IMAGES[0];
                   return (
                     <th
                       key={i}
@@ -79,7 +80,7 @@ export const MemberTable: React.FC<MemberTableProps> = ({
                     >
                       <div className="flex flex-col items-center gap-1">
                         <img
-                          src={BOSS_IMAGES[i]}
+                          src={imageSrc}
                           alt={name}
                           className={`w-12 h-12 rounded-xl object-cover border border-stone-200 dark:border-stone-700 ${
                             isDead ? 'opacity-50 grayscale' : ''
@@ -101,7 +102,7 @@ export const MemberTable: React.FC<MemberTableProps> = ({
               >
                 <div className="flex flex-col items-center gap-1">
                   <img
-                    src={BOSS_IMAGES[4]}
+                    src={BOSS_IMAGES[4] ?? BOSS_IMAGES[0]}
                     alt="God"
                     className="w-12 h-12 rounded-xl object-cover border border-stone-200 dark:border-stone-700"
                   />
@@ -175,7 +176,7 @@ export const MemberTable: React.FC<MemberTableProps> = ({
                   </td>
                   {state.page === 1 ? (
                     member.v.map((val, i) => {
-                      const isDead = state.deadBosses[1][i];
+                      const isDead = state.deadBosses[1]?.[i] ?? false;
                       const displayVal =
                         state.mode === 'damage'
                           ? (member.d?.[i] || 0).toLocaleString()
