@@ -118,22 +118,17 @@ function App() {
     entries: { name: string; damage: number; plays?: number }[]
   ) => {
     const members = [...state.members];
+    let updated = 0;
+    const skipped: string[] = [];
 
     entries.forEach((entry) => {
-      let idx = members.findIndex(
+      const idx = members.findIndex(
         (m) => m.name.trim().toLowerCase() === entry.name.trim().toLowerCase()
       );
 
       if (idx === -1) {
-        const allowAdd = window.confirm(`Add new member "${entry.name}" from scan?`);
-        if (!allowAdd) return;
-        members.push({
-          name: entry.name.trim(),
-          v: [0, 0, 0, 0],
-          v2: 0,
-          d: [0, 0, 0, 0],
-        });
-        idx = members.length - 1;
+        skipped.push(entry.name.trim());
+        return;
       }
 
       const member = members[idx];
@@ -144,17 +139,25 @@ function App() {
         if (typeof entry.plays === 'number') {
           newV[bossIndex] = entry.plays;
         }
+        members[idx] = { ...member, d: newD, v: newV };
+        updated += 1;
       } else {
-        // fallback to total (page 2 style)
         members[idx] = { ...member, v2: entry.damage };
-        return;
+        updated += 1;
       }
-
-      members[idx] = { ...member, d: newD, v: newV };
     });
 
-    updateState({ members });
-    showToast(t('toast_saved'), 'success');
+    if (updated > 0) {
+      updateState({ members });
+      showToast(`Updated ${updated} member${updated > 1 ? 's' : ''} from scan`, 'success');
+    } else {
+      showToast('No matching members found to update', 'info');
+    }
+
+    if (skipped.length) {
+      console.info('Skipped unknown members from OCR:', skipped.join(', '));
+    }
+
     setOcrModalOpen(false);
   };
 
