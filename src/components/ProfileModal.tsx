@@ -161,7 +161,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                   {t('profile_avg')}
                 </div>
                 <div className="text-lg font-bold text-kanso-text dark:text-kansoDark-text">
-                  {stats.avg}
+                  {stats.avg.toLocaleString()}
                 </div>
               </div>
             </div>
