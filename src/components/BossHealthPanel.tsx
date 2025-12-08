@@ -123,25 +123,28 @@ export const BossHealthPanel: React.FC<BossHealthPanelProps> = ({ state }) => {
                 <div className="text-xs text-kanso-muted dark:text-kansoDark-muted">No data yet</div>
               ) : (
                 <ul className="space-y-2">
-                  {topPerformers[i].map((entry, idx) => (
-                    <li key={idx} className="flex items-center justify-between text-xs bg-white/40 dark:bg-black/10 rounded-lg px-2 py-1">
-                      <div className="flex items-center gap-2 min-w-0">
-                        {idx < 3 && (
-                          <img
-                            src={`/rank${idx + 1}.png`}
-                            alt={`Rank ${idx + 1}`}
-                            className="w-4 h-4 shrink-0"
-                          />
-                        )}
-                        <span className="font-medium text-kanso-text dark:text-kansoDark-text truncate">
-                          {entry.name}
+                  {topPerformers[i].map((entry, idx) => {
+                    const rankBadge = `${import.meta.env.BASE_URL}rank${idx + 1}.png`;
+                    return (
+                      <li key={idx} className="flex items-center justify-between text-xs bg-white/40 dark:bg-black/10 rounded-lg px-2 py-1">
+                        <div className="flex items-center gap-2 min-w-0">
+                          {idx < 3 && (
+                            <img
+                              src={rankBadge}
+                              alt={`Rank ${idx + 1}`}
+                              className="w-4 h-4 shrink-0"
+                            />
+                          )}
+                          <span className="font-medium text-kanso-text dark:text-kansoDark-text truncate">
+                            {entry.name}
+                          </span>
+                        </div>
+                        <span className="text-right text-kanso-muted dark:text-kansoDark-muted ml-2">
+                          {Math.round(entry.avg || 0).toLocaleString()} dmg/att | {entry.plays} plays
                         </span>
-                      </div>
-                      <span className="text-right text-kanso-muted dark:text-kansoDark-muted ml-2">
-                        {Math.round(entry.avg || 0).toLocaleString()} dmg/att | {entry.plays} plays
-                      </span>
-                    </li>
-                  ))}
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>
