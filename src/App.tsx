@@ -98,6 +98,31 @@ function App() {
     showToast(t('toast_exported'), 'success');
   };
 
+  const handleCopyData = async () => {
+    const exportPayload = {
+      version: 1,
+      generatedAt: new Date().toISOString(),
+      data: {
+        members: state.members,
+        config: state.config,
+        days1: state.days1,
+        days2: state.days2,
+        deadBosses: state.deadBosses,
+        language: state.language,
+        mode: state.mode,
+        filter: state.filter,
+      },
+    };
+
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(exportPayload, null, 2));
+      showToast(t('toast_copied'), 'success');
+    } catch (error) {
+      console.error('Failed to copy data', error);
+      showToast(t('toast_error'), 'error');
+    }
+  };
+
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
@@ -334,6 +359,7 @@ function App() {
         onModeToggle={() => updateState({ mode: state.mode === 'count' ? 'damage' : 'count' })}
         onScan={handleScan}
         onImport={handleImportClick}
+        onCopyData={handleCopyData}
         onExport={handleExport}
         onReset={handleResetWeek}
         onUndo={handleUndo}

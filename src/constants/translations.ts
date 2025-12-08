@@ -15,6 +15,7 @@ export const TRANSLATIONS: Translations = {
     btn_scan: 'สแกนรูป',
     btn_smart_report: 'รายงานสรุป',
     btn_simple_report: 'คัดลอก',
+    btn_copy_data: 'Copy Current Data',
     btn_reset: 'รีเซ็ตสัปดาห์',
     
     // Dashboard
