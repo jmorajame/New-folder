@@ -208,6 +208,13 @@ function App() {
         onSettingsOpen={() => setSettingsModalOpen(true)}
         onUpdateState={updateState}
       />
+      <Dashboard state={state} />
+      <SearchBar
+        state={state}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        onAddMember={handleAddMember}
+      />
       <Toolbar
         state={state}
         onPageChange={(page) => updateState({ page })}
@@ -219,13 +226,8 @@ function App() {
         onReset={handleResetWeek}
         onUndo={handleUndo}
       />
-      <SearchBar
-        state={state}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        onAddMember={handleAddMember}
-      />
-      <div className="container mx-auto px-4 py-4 space-y-4">
+      <div className="container mx-auto px-4 py-4">
+        <BossHealthPanel state={state} />
         <MemberTable
           state={state}
           searchTerm={searchTerm}
@@ -236,8 +238,6 @@ function App() {
           onProfile={handleProfile}
           onToggleDeadBoss={toggleDeadBoss}
         />
-        <BossHealthPanel state={state} />
-        <Dashboard state={state} />
       </div>
       {toast && (
         <Toast
