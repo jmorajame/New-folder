@@ -28,11 +28,11 @@ interface DashboardProps {
 }
 
 const getTotalPossibleDamage = (
-  state: Pick<AppState, 'deadBosses' | 'config'>
+  state: Pick<AppState, 'config'>
 ): number => {
   const maxHp = state.config?.bossMaxHp ?? BOSS_MAX_HP;
-  const aliveBosses = BOSS_NAMES.filter((_, i) => !(state.deadBosses[1]?.[i] ?? false)).length;
-  return aliveBosses * maxHp;
+  // Goal remains full max HP for all bosses regardless of dead status
+  return BOSS_NAMES.length * maxHp;
 };
 
 export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
