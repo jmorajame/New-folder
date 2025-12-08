@@ -266,7 +266,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
         </div>
       </div>
 
-      <div className="glass-panel p-6">
+      {/* <div className="glass-panel p-6">
         <h2 className="text-lg font-bold mb-4 text-kanso-text dark:text-kansoDark-text">
           {t('boss_breakdown')}
         </h2>
@@ -294,7 +294,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
             }} 
           />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

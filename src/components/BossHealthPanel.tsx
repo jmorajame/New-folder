@@ -7,8 +7,6 @@ interface BossHealthPanelProps {
 }
 
 export const BossHealthPanel: React.FC<BossHealthPanelProps> = ({ state }) => {
-  if (state.page !== 1 || state.mode !== 'damage') return null;
-
   const bossDamage = [0, 0, 0, 0];
   state.members.forEach((member) => {
     (member.d || [0, 0, 0, 0]).forEach((dmg, i) => {
