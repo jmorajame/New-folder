@@ -60,7 +60,7 @@ export const MemberTable: React.FC<MemberTableProps> = ({
   return (
     <div className="member-table overflow-x-auto max-h-[600px] overflow-y-auto">
       <table className="w-full border-collapse">
-        <thead>
+        <thead className="sticky top-0 z-20">
           <tr className="bg-kanso-surface dark:bg-kansoDark-surface">
             <th className="w-8 p-2"></th>
             <th
@@ -261,7 +261,7 @@ export const MemberTable: React.FC<MemberTableProps> = ({
           )}
         </tbody>
         <tfoot>
-          <tr className="bg-kanso-surface dark:bg-kansoDark-surface font-bold">
+          <tr className="bg-kanso-surface dark:bg-kansoDark-surface font-bold sticky bottom-0 z-10">
             <td colSpan={2} className="p-3 text-right font-mono">
               {t('th_total')}
             </td>
