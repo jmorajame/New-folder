@@ -225,9 +225,7 @@ function App() {
         onSearchChange={setSearchTerm}
         onAddMember={handleAddMember}
       />
-      <Dashboard state={state} />
-      <div className="container mx-auto px-4 py-4">
-        <BossHealthPanel state={state} />
+      <div className="container mx-auto px-4 py-4 space-y-4">
         <MemberTable
           state={state}
           searchTerm={searchTerm}
@@ -238,6 +236,8 @@ function App() {
           onProfile={handleProfile}
           onToggleDeadBoss={toggleDeadBoss}
         />
+        <BossHealthPanel state={state} />
+        <Dashboard state={state} />
       </div>
       {toast && (
         <Toast
