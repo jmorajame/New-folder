@@ -27,7 +27,7 @@ function App() {
     updateMember,
     toggleDeadBoss,
   } = useAppState();
-  
+
   const { toggleTheme } = useTheme();
   const { t } = useTranslations(state);
   const [searchTerm, setSearchTerm] = useState('');
@@ -111,13 +111,13 @@ function App() {
     const deadBosses =
       data.deadBosses && typeof data.deadBosses === 'object'
         ? {
-            1: Array.isArray(data.deadBosses[1])
-              ? data.deadBosses[1].map((v: any) => Boolean(v))
-              : state.deadBosses[1],
-            2: Array.isArray(data.deadBosses[2])
-              ? data.deadBosses[2].map((v: any) => Boolean(v))
-              : state.deadBosses[2],
-          }
+          1: Array.isArray(data.deadBosses[1])
+            ? data.deadBosses[1].map((v: any) => Boolean(v))
+            : state.deadBosses[1],
+          2: Array.isArray(data.deadBosses[2])
+            ? data.deadBosses[2].map((v: any) => Boolean(v))
+            : state.deadBosses[2],
+        }
         : state.deadBosses;
 
     const language = data.language === 'en' || data.language === 'th' ? data.language : state.language;
@@ -321,9 +321,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-kanso-bg dark:bg-kansoDark-bg">
-      <Header 
-        state={state} 
-        onThemeToggle={toggleTheme} 
+      <Header
+        state={state}
+        onThemeToggle={toggleTheme}
         onSettingsOpen={() => setSettingsModalOpen(true)}
         onUpdateState={updateState}
       />
@@ -334,28 +334,31 @@ function App() {
         onChange={handleImportFile}
         className="hidden"
       />
-      <Dashboard state={state} />
-      <SearchBar
-        state={state}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        onAddMember={handleAddMember}
-      />
-      <Toolbar
-        state={state}
-        onPageChange={(page) => updateState({ page })}
-        onFilterChange={(filter) => updateState({ filter })}
-        onCompactToggle={() => updateState({ compact: !state.compact })}
-        onModeToggle={() => updateState({ mode: state.mode === 'count' ? 'damage' : 'count' })}
-        onScan={handleScan}
-        onImport={handleImportClick}
-        onLoadStored={handleLoadStoredData}
-        onExport={handleExport}
-        onReset={handleResetWeek}
-        onUndo={handleUndo}
-      />
       <div className="container mx-auto px-4 py-4">
+        <Dashboard state={state} />
         <BossHealthPanel state={state} />
+      </div>
+
+      <div className="container mx-auto px-4 py-4">
+        <Toolbar
+          state={state}
+          onPageChange={(page) => updateState({ page })}
+          onFilterChange={(filter) => updateState({ filter })}
+          onCompactToggle={() => updateState({ compact: !state.compact })}
+          onModeToggle={() => updateState({ mode: state.mode === 'count' ? 'damage' : 'count' })}
+          onScan={handleScan}
+          onImport={handleImportClick}
+          onLoadStored={handleLoadStoredData}
+          onExport={handleExport}
+          onReset={handleResetWeek}
+          onUndo={handleUndo}
+        />
+        <SearchBar
+          state={state}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onAddMember={handleAddMember}
+        />
         <MemberTable
           state={state}
           searchTerm={searchTerm}
