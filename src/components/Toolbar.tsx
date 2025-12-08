@@ -9,6 +9,7 @@ interface ToolbarProps {
   onCompactToggle: () => void;
   onModeToggle: () => void;
   onScan: () => void;
+  onImport: () => void;
   onExport: () => void;
   onReset: () => void;
   onUndo: () => void;
@@ -21,6 +22,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onCompactToggle,
   onModeToggle,
   onScan,
+  onImport,
   onExport,
   onReset,
   onUndo,
@@ -59,12 +61,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </button>
       
       <div className="divider"></div>
-      
-      <button className="tool-btn" onClick={onScan}>
-        <i className="fas fa-camera"></i> {t('btn_scan')}
+      <button className="tool-btn" onClick={onImport}>
+        <i className="fas fa-file-import"></i> {t('exp_restore')}
       </button>
       <button className="tool-btn btn-smart" onClick={onExport}>
-        <i className="fas fa-share"></i> {t('btn_smart_report')}
+        <i className="fas fa-share"></i> {t('exp_backup')}
       </button>
       <button className="tool-btn" onClick={onReset}>
         <i className="fas fa-redo"></i> {t('btn_reset')}

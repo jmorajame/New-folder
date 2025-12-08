@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Header } from './components/Header';
 import { Toolbar } from './components/Toolbar';
 import { Dashboard } from './components/Dashboard';
@@ -37,6 +37,7 @@ function App() {
   const [ocrBossIndex, setOcrBossIndex] = useState(0);
   const [ocrMemberIndex, setOcrMemberIndex] = useState(-1);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ message, type });
@@ -70,8 +71,111 @@ function App() {
   };
 
   const handleExport = () => {
-    // TODO: Implement export functionality
-    showToast('Export feature coming soon', 'info');
+    const exportPayload = {
+      version: 1,
+      generatedAt: new Date().toISOString(),
+      data: {
+        members: state.members,
+        config: state.config,
+        days1: state.days1,
+        days2: state.days2,
+        deadBosses: state.deadBosses,
+        language: state.language,
+        mode: state.mode,
+        filter: state.filter,
+      },
+    };
+
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `bossguild-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast(t('toast_exported'), 'success');
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImportFile: React.ChangeEventHandler<HTMLInputElement> = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const data = parsed.data || parsed;
+
+      const normalizeArray = (arr: unknown[] | undefined, length = 4) =>
+        Array.from({ length }, (_, idx) => {
+          const val = arr?.[idx];
+          return typeof val === 'number' ? val : 0;
+        });
+
+      if (!data || !Array.isArray(data.members)) {
+        throw new Error('Invalid backup format');
+      }
+
+      const members = data.members.map((m: any) => ({
+        name: typeof m.name === 'string' ? m.name : 'Unknown',
+        v: normalizeArray(m.v),
+        v2: typeof m.v2 === 'number' ? m.v2 : 0,
+        d: normalizeArray(m.d),
+        note: typeof m.note === 'string' ? m.note : undefined,
+        avatar: typeof m.avatar === 'string' ? m.avatar : undefined,
+      }));
+
+      const deadBosses =
+        data.deadBosses && typeof data.deadBosses === 'object'
+          ? {
+              1: Array.isArray(data.deadBosses[1])
+                ? data.deadBosses[1].map((v: any) => Boolean(v))
+                : state.deadBosses[1],
+              2: Array.isArray(data.deadBosses[2])
+                ? data.deadBosses[2].map((v: any) => Boolean(v))
+                : state.deadBosses[2],
+            }
+          : state.deadBosses;
+
+      const language = data.language === 'en' || data.language === 'th' ? data.language : state.language;
+      const mode = data.mode === 'damage' || data.mode === 'count' ? data.mode : state.mode;
+      const filter = data.filter === 'risk' ? 'risk' : 'all';
+
+      const tiers = data.config?.tiers || state.config.tiers;
+
+      updateState({
+        members,
+        config: {
+          ...state.config,
+          ...(data.config || {}),
+          tiers: {
+            s: typeof tiers.s === 'number' ? tiers.s : state.config.tiers.s,
+            a: typeof tiers.a === 'number' ? tiers.a : state.config.tiers.a,
+            b: typeof tiers.b === 'number' ? tiers.b : state.config.tiers.b,
+            c: typeof tiers.c === 'number' ? tiers.c : state.config.tiers.c,
+            d: typeof tiers.d === 'number' ? tiers.d : state.config.tiers.d,
+          },
+        },
+        days1: typeof data.days1 === 'number' ? data.days1 : state.days1,
+        days2: typeof data.days2 === 'number' ? data.days2 : state.days2,
+        deadBosses,
+        language,
+        mode,
+        filter,
+      });
+
+      showToast(t('toast_imported'), 'success');
+    } catch (error) {
+      console.error('Failed to import backup', error);
+      showToast(t('toast_import_failed'), 'error');
+    } finally {
+      event.target.value = '';
+    }
   };
 
   const handleUndo = () => {
@@ -208,6 +312,13 @@ function App() {
         onSettingsOpen={() => setSettingsModalOpen(true)}
         onUpdateState={updateState}
       />
+      <input
+        type="file"
+        accept="application/json"
+        ref={fileInputRef}
+        onChange={handleImportFile}
+        className="hidden"
+      />
       <Dashboard state={state} />
       <SearchBar
         state={state}
@@ -222,6 +333,7 @@ function App() {
         onCompactToggle={() => updateState({ compact: !state.compact })}
         onModeToggle={() => updateState({ mode: state.mode === 'count' ? 'damage' : 'count' })}
         onScan={handleScan}
+        onImport={handleImportClick}
         onExport={handleExport}
         onReset={handleResetWeek}
         onUndo={handleUndo}

@@ -81,6 +81,9 @@ export const TRANSLATIONS: Translations = {
     toast_copied: 'คัดลอกลงคลิปบอร์ดแล้ว',
     toast_reset: 'รีเซ็ตข้อมูลสัปดาห์เรียบร้อย',
     toast_error: 'เกิดข้อผิดพลาด',
+    toast_exported: 'Backup file downloaded',
+    toast_imported: 'Data imported successfully',
+    toast_import_failed: 'Import failed. Please check the file.',
     
     // Misc
     days: 'วัน',
@@ -172,6 +175,9 @@ export const TRANSLATIONS: Translations = {
     toast_copied: 'Copied to clipboard',
     toast_reset: 'Week reset successfully',
     toast_error: 'An error occurred',
+    toast_exported: 'Backup file downloaded',
+    toast_imported: 'Data imported successfully',
+    toast_import_failed: 'Import failed. Please check the file.',
     
     // Misc
     days: 'Days',
