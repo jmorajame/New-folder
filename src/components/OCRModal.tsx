@@ -7,7 +7,7 @@ import { createWorker } from 'tesseract.js';
 interface OCRModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onResult: (bossIndex: number, value: number) => void;
+  onResult: (bossIndex: number, value: number, plays?: number) => void;
   onBulkResults: (bossIndex: number, entries: { name: string; damage: number; plays?: number }[]) => void;
   state: Pick<AppState, 'page' | 'config' | 'language'>;
   memberIndex: number;
@@ -86,6 +86,13 @@ export const OCRModal: React.FC<OCRModalProps> = ({
         setTimeout(() => {
           handleClose();
         }, 800);
+      } else if (entries.length === 1) {
+        const single = entries[0];
+        onResult(selectedBoss, single.damage, single.plays);
+        setStatus(`Found: ${single.damage.toLocaleString()}`);
+        setTimeout(() => {
+          handleClose();
+        }, 1200);
       } else {
         // fallback to single value detection
         const numbers = text.match(/\d{1,3}(?:[,\s]\d{3})*(?:\.\d+)?/g) || [];
@@ -171,6 +178,13 @@ export const OCRModal: React.FC<OCRModalProps> = ({
               setTimeout(() => {
                 handleClose();
               }, 800);
+            } else if (entries.length === 1) {
+              const single = entries[0];
+              onResult(selectedBoss, single.damage, single.plays);
+              setStatus(`Found: ${single.damage.toLocaleString()}`);
+              setTimeout(() => {
+                handleClose();
+              }, 1200);
             } else {
               const numbers = text.match(/\d{1,3}(?:[,\s]\d{3})*(?:\.\d+)?/g) || [];
               

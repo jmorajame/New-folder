@@ -102,13 +102,26 @@ function App() {
     setOcrModalOpen(true);
   };
 
-  const handleOCRResult = (bossIndex: number, value: number) => {
+  const handleOCRResult = (bossIndex: number, value: number, plays?: number) => {
     if (ocrMemberIndex >= 0 && ocrMemberIndex < state.members.length) {
-      updateMemberValue(ocrMemberIndex, bossIndex, value);
+      const member = state.members[ocrMemberIndex];
+      const newD = [...(member.d || [0, 0, 0, 0])];
+      const newV = [...member.v];
+
+      if (bossIndex >= 0) {
+        newD[bossIndex] = value;
+        if (typeof plays === 'number') {
+          newV[bossIndex] = plays;
+        }
+        updateMember(ocrMemberIndex, { d: newD, v: newV });
+      } else {
+        updateMemberValue(ocrMemberIndex, bossIndex, value);
+      }
       showToast(t('toast_saved'), 'success');
     } else {
       // OCR from toolbar - just show the result, user can manually enter
-      showToast(`Detected: ${value.toLocaleString()}`, 'info');
+      const playsText = typeof plays === 'number' ? `, Plays: ${plays}` : '';
+      showToast(`Detected: ${value.toLocaleString()}${playsText}`, 'info');
     }
     setOcrModalOpen(false);
   };

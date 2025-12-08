@@ -13,6 +13,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { BOSS_NAMES, BOSS_MAX_HP } from '../constants';
 
 ChartJS.register(
   CategoryScale,
@@ -56,6 +57,18 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
 
   const stats = getMemberStats(member, state);
   const tier = calculateTier(member, state);
+  const bossLabels = state.page === 1 ? [...BOSS_NAMES] : ['God'];
+  const damageData = state.page === 1 ? (member.d || [0, 0, 0, 0]) : [];
+  const countData = state.page === 1 ? member.v : [member.v2];
+  const completionDamage =
+    state.page === 1 && damageData.length
+      ? Math.min(
+          100,
+          (damageData.reduce((a, b) => a + b, 0) /
+            ((state.config?.bossMaxHp ?? BOSS_MAX_HP) * bossLabels.length)) *
+            100
+        )
+      : stats.completion;
 
   const handleSave = () => {
     onUpdate(memberIndex, { note: note.trim() || undefined });
@@ -63,19 +76,24 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   };
 
   const chartData = {
-    labels: state.page === 1 
-      ? ['Teo', 'Kyle', 'Yeonhee', 'Karma']
-      : ['God'],
+    labels: bossLabels,
     datasets: [
+      ...(state.page === 1
+        ? [
+            {
+              label: 'Damage',
+              data: damageData,
+              borderColor: '#CC6E43',
+              backgroundColor: 'rgba(204, 110, 67, 0.15)',
+              tension: 0.4,
+            },
+          ]
+        : []),
       {
-        label: state.mode === 'damage' ? 'Damage' : 'Attempts',
-        data: state.page === 1
-          ? state.mode === 'damage'
-            ? member.d || [0, 0, 0, 0]
-            : member.v
-          : [member.v2],
-        borderColor: '#CC6E43',
-        backgroundColor: 'rgba(204, 110, 67, 0.1)',
+        label: 'Attempts',
+        data: countData,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99, 102, 241, 0.15)',
         tension: 0.4,
       },
     ],
@@ -136,7 +154,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                   {t('profile_completion')}
                 </div>
                 <div className="text-lg font-bold text-kanso-text dark:text-kansoDark-text">
-                  {stats.completion.toFixed(1)}%
+                  {(completionDamage).toFixed(1)}%
                 </div>
               </div>
             </div>
