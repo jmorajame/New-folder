@@ -59,7 +59,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   const tier = calculateTier(member, state);
   const bossLabels = state.page === 1 ? [...BOSS_NAMES] : ['God'];
   const damageData = state.page === 1 ? (member.d || [0, 0, 0, 0]) : [];
-  const countData = state.page === 1 ? member.v : [member.v2];
+  const countData = state.page === 1 ? (member.v || [0, 0, 0, 0]) : [member.v2];
   const completionDamage =
     state.page === 1 && damageData.length
       ? Math.min(
@@ -116,7 +116,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
 
         <div className="space-y-6">
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             <div className="metric-card">
               <div className="metric-icon">
                 <i className="fas fa-chart-line"></i>
