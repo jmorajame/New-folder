@@ -59,8 +59,8 @@ export const TRANSLATIONS: Translations = {
     exp_save_img: 'บันทึกรูป',
     exp_ig_story: 'IG Story',
     exp_pdf: 'รายงาน PDF',
-    exp_backup: 'สำรองข้อมูล (JSON)',
-    exp_restore: 'กู้คืนข้อมูล (JSON)',
+    exp_backup: 'import (JSON)',
+    exp_restore: 'export (JSON)',
     exp_csv: 'ส่งออก CSV',
     exp_imp_csv: 'นำเข้า CSV',
     
