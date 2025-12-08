@@ -58,7 +58,7 @@ export const MemberTable: React.FC<MemberTableProps> = ({
   };
 
   return (
-    <div className="member-table overflow-x-auto">
+    <div className="member-table overflow-x-auto max-h-[600px] overflow-y-auto">
       <table className="w-full border-collapse">
         <thead>
           <tr className="bg-kanso-surface dark:bg-kansoDark-surface">
