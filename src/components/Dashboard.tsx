@@ -127,7 +127,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ state }) => {
   }, [state, analytics, t]);
 
   return (
-    <div className="dashboard p-4 space-y-4">
+    <div className="dashboard p-6 mb-4 space-y-6">
       {/* Guild Progress Section */}
       <div className="glass-panel p-6">
         <div className="flex items-start justify-between mb-4">
