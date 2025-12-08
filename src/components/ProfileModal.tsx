@@ -59,7 +59,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   const tier = calculateTier(member, state);
   const bossLabels = state.page === 1 ? [...BOSS_NAMES] : ['God'];
   const damageData = state.page === 1 ? (member.d || [0, 0, 0, 0]) : [];
-  const countData = state.page === 1 ? member.v : [member.v2];
+  const countData = state.page === 1 ? (member.v || [0, 0, 0, 0]) : [member.v2 ?? 0];
   const completionDamage =
     state.page === 1 && damageData.length
       ? Math.min(
@@ -78,25 +78,46 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   const chartData = {
     labels: bossLabels,
     datasets: [
-      ...(state.page === 1
-        ? [
-            {
-              label: 'Damage',
-              data: damageData,
-              borderColor: '#CC6E43',
-              backgroundColor: 'rgba(204, 110, 67, 0.15)',
-              tension: 0.4,
-            },
-          ]
-        : []),
-      {
-        label: 'Attempts',
-        data: countData,
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99, 102, 241, 0.15)',
-        tension: 0.4,
-      },
+      state.page === 1
+        ? {
+            label: 'Damage',
+            data: damageData,
+            borderColor: '#CC6E43',
+            backgroundColor: 'rgba(204, 110, 67, 0.15)',
+            tension: 0.4,
+          }
+        : {
+            label: 'Attempts',
+            data: countData,
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99, 102, 241, 0.15)',
+            tension: 0.4,
+          },
     ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) => {
+            const val = ctx.parsed.y;
+            if (state.page === 1) {
+              const attempts = countData[ctx.dataIndex] ?? 0;
+              return [`Damage: ${val.toLocaleString()}`, `Attempts: ${attempts}`];
+            }
+            return `Attempts: ${val}`;
+          },
+        },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
   };
 
   return (
@@ -184,7 +205,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               Performance
             </h3>
             <div className="h-64">
-              <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
+              <Line data={chartData} options={chartOptions} />
             </div>
           </div>
 
