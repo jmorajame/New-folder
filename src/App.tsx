@@ -188,6 +188,11 @@ function App() {
     showToast(t('toast_saved'), 'success');
   };
 
+  const handleUpdateDays = (days: Partial<Pick<typeof state, 'days1' | 'days2'>>) => {
+    updateState({ ...days });
+    showToast(t('toast_saved'), 'success');
+  };
+
   const handleFactoryReset = () => {
     if (window.confirm('This will delete ALL data. Are you absolutely sure?')) {
       localStorage.clear();
@@ -279,6 +284,7 @@ function App() {
         onClose={() => setSettingsModalOpen(false)}
         state={state}
         onUpdateConfig={handleUpdateConfig}
+        onUpdateDays={handleUpdateDays}
         onUpdateLanguage={(lang) => updateState({ language: lang })}
         onBulkAddMembers={handleBulkAddMembers}
         onFactoryReset={handleFactoryReset}

@@ -41,6 +41,8 @@ export const TRANSLATIONS: Translations = {
     // Modals & Settings
     modal_settings: 'ตั้งค่า',
     setting_language: 'ภาษา / Language',
+    setting_days_shadow: 'วันสำหรับบอสเงา',
+    setting_days_god: 'วันสำหรับเทพเจ้าแห่งการทำลายล้าง',
     setting_max_hp: 'เลือดบอสสูงสุด (Max HP)',
     setting_tiers: 'เกณฑ์ระดับ (ดาเมจเฉลี่ย)',
     setting_ocr: 'คำค้นหา OCR',
@@ -130,6 +132,8 @@ export const TRANSLATIONS: Translations = {
     // Modals & Settings
     modal_settings: 'Settings',
     setting_language: 'Language',
+    setting_days_shadow: 'Days for Shadow bosses',
+    setting_days_god: 'Days for God of destruction',
     setting_max_hp: 'Max Boss HP',
     setting_tiers: 'Tier Thresholds (Avg Dmg)',
     setting_ocr: 'OCR Keywords',

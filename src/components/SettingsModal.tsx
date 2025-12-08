@@ -7,6 +7,7 @@ interface SettingsModalProps {
   onClose: () => void;
   state: AppState;
   onUpdateConfig: (config: Partial<AppState['config']>) => void;
+  onUpdateDays: (days: Partial<Pick<AppState, 'days1' | 'days2'>>) => void;
   onUpdateLanguage: (lang: 'th' | 'en') => void;
   onBulkAddMembers: (names: string[]) => void;
   onFactoryReset: () => void;
@@ -17,6 +18,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
   state,
   onUpdateConfig,
+  onUpdateDays,
   onUpdateLanguage,
   onBulkAddMembers,
   onFactoryReset,
@@ -27,6 +29,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [tiers, setTiers] = useState(state.config.tiers);
   const [bulkNames, setBulkNames] = useState('');
   const [discordWebhook, setDiscordWebhook] = useState('');
+  const [days1, setDays1] = useState(state.days1.toString());
+  const [days2, setDays2] = useState(state.days2.toString());
 
   useEffect(() => {
     if (isOpen) {
@@ -34,10 +38,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       setOcrKeywords(state.config.ocrKeywords);
       setTiers({ ...state.config.tiers });
       setBulkNames('');
+      setDays1(state.days1.toString());
+      setDays2(state.days2.toString());
     }
-  }, [isOpen, state.config]);
+  }, [isOpen, state.config, state.days1, state.days2]);
 
   const handleSave = () => {
+    onUpdateDays({
+      days1: parseInt(days1) || state.days1,
+      days2: parseInt(days2) || state.days2,
+    });
     onUpdateConfig({
       bossMaxHp: parseInt(bossMaxHp) || 100_000_000,
       ocrKeywords,
@@ -97,6 +107,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <option value="th">ไทย (Thai)</option>
               <option value="en">English</option>
             </select>
+          </div>
+
+          {/* Event Days */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-kanso-text dark:text-kansoDark-text mb-2">
+                {t('setting_days_shadow') || 'Days for Shadow bosses'}
+              </label>
+              <input
+                type="number"
+                value={days1}
+                onChange={(e) => setDays1(e.target.value)}
+                className="w-full p-3 rounded-lg bg-kanso-bg dark:bg-kansoDark-bg border border-kanso-border dark:border-kansoDark-border text-kanso-text dark:text-kansoDark-text focus:outline-none focus:ring-2 focus:ring-clay-500 font-mono"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-kanso-text dark:text-kansoDark-text mb-2">
+                {t('setting_days_god') || 'Days for God boss'}
+              </label>
+              <input
+                type="number"
+                value={days2}
+                onChange={(e) => setDays2(e.target.value)}
+                className="w-full p-3 rounded-lg bg-kanso-bg dark:bg-kansoDark-bg border border-kanso-border dark:border-kansoDark-border text-kanso-text dark:text-kansoDark-text focus:outline-none focus:ring-2 focus:ring-clay-500 font-mono"
+              />
+            </div>
           </div>
 
           {/* Max Boss HP */}

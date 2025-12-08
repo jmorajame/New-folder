@@ -37,15 +37,28 @@ export function getMemberStats(
 
 export function calculateTier(
   member: Member,
-  state: Pick<AppState, 'page' | 'mode' | 'config'>
+  state: Pick<AppState, 'page' | 'mode' | 'config' | 'days1'>
 ): Tier {
   const stats = getMemberStats(member, state);
   const avgDmg = stats.avg;
 
-  if (state.page === 2 || state.mode === 'count') {
+  // Page 2 remains un-tiered
+  if (state.page === 2) {
     return { label: '-', class: 'tier-none' };
   }
 
+  // Count mode tiers based on days1 target
+  if (state.mode === 'count') {
+    const target = Math.max(0, state.days1);
+    const totalCount = member.v.reduce((a, b) => a + b, 0);
+    if (totalCount >= target) return { label: 'A', class: 'tier-a' };
+    if (totalCount === target - 1) return { label: 'B', class: 'tier-b' };
+    if (totalCount >= target - 2) return { label: 'C', class: 'tier-c' };
+    if (totalCount >= target - 3) return { label: 'D', class: 'tier-d' };
+    return { label: 'F', class: 'tier-f' };
+  }
+
+  // Damage mode tiers (avg damage per day)
   const { tiers } = state.config;
   if (avgDmg >= tiers.s) {
     return { label: 'S', class: 'tier-s' };
