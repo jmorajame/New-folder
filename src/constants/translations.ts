@@ -15,7 +15,6 @@ export const TRANSLATIONS: Translations = {
     btn_scan: 'สแกนรูป',
     btn_smart_report: 'รายงานสรุป',
     btn_simple_report: 'คัดลอก',
-    btn_copy_data: 'Copy Current Data',
     btn_reset: 'รีเซ็ตสัปดาห์',
     
     // Dashboard
@@ -62,6 +61,7 @@ export const TRANSLATIONS: Translations = {
     exp_pdf: 'รายงาน PDF',
     exp_backup: 'export (JSON)',
     exp_restore: 'import (JSON)',
+    btn_get_current_data: 'Get current data',
     exp_csv: 'ส่งออก CSV',
     exp_imp_csv: 'นำเข้า CSV',
     
@@ -156,6 +156,7 @@ export const TRANSLATIONS: Translations = {
     exp_pdf: 'Report PDF',
     exp_backup: 'Backup (JSON)',
     exp_restore: 'Restore (JSON)',
+    btn_get_current_data: 'Get current data',
     exp_csv: 'Export CSV',
     exp_imp_csv: 'Import CSV',
     

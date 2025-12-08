@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "generatedAt": "2025-12-08T00:00:00.000Z",
+  "data": {
+    "members": [
+      { "name": "Alice", "v": [3, 2, 1, 0], "v2": 5, "d": [1200000, 900000, 750000, 0] },
+      { "name": "Bob", "v": [2, 2, 2, 1], "v2": 4, "d": [800000, 820000, 600000, 400000] },
+      { "name": "Charlie", "v": [1, 1, 1, 1], "v2": 2, "d": [500000, 450000, 430000, 410000] }
+    ],
+    "config": {
+      "bossMaxHp": 100000000,
+      "ocrKeywords": "Attack, Times",
+      "tiers": { "s": 1500000, "a": 1200000, "b": 1000000, "c": 800000, "d": 500000 }
+    },
+    "days1": 14,
+    "days2": 11,
+    "deadBosses": { "1": [false, false, false, false], "2": [false] },
+    "language": "en",
+    "mode": "damage",
+    "filter": "all"
+  }
+}
